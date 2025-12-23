@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Supervision Nationale</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background: #1a202c; color: white; text-align: center; }
+        .stats { display: flex; justify-content: center; gap: 20px; margin-top: 50px; }
+        .card { background: #2d3748; padding: 30px; border-radius: 10px; min-width: 200px; }
+        .val { font-size: 48px; font-weight: bold; color: #48bb78; }
+        #log { margin-top: 30px; color: #a0aec0; }
+    </style>
+</head>
+<body>
+    <h1>📊 Actualisation des Votes (Temps Réel)</h1>
+    <div class="stats">
+        <div class="card"><div id="total" class="val">0</div><div>Votes</div></div>
+        <div class="card"><div id="percent" class="val">0%</div><div>Participation</div></div>
+    </div>
+    <p id="log">Chargement...</p>
+
+    <script>
+        async function maj() {
+            try {
+                const r = await fetch('stats.php');
+                const d = await r.json();
+                document.getElementById('total').innerText = d.total_votes;
+                const p = d.total_inscrits > 0 ? (d.total_votes / d.total_inscrits * 100).toFixed(1) : 0;
+                document.getElementById('percent').innerText = p + "%";
+                document.getElementById('log').innerText = "Dernier vote : " + d.dernier_nom + " (" + d.dernier_bureau + ")";
+            } catch(e) {}
+        }
+        setInterval(maj, 3000); // Mise à jour toutes les 3 secondes
+        maj();
+    </script>
+</body>
+</html>

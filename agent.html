@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent de Vote Mobile</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .box { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        #res { margin-top: 15px; font-weight: bold; padding: 10px; border-radius: 5px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>🗳️ Validation Vote</h2>
+        <input type="text" id="idInput" placeholder="Entrez l'ID National">
+        <button onclick="envoyerVote()">VALIDER LE PASSAGE</button>
+        <div id="res"></div>
+    </div>
+
+    <script>
+        async function envoyerVote() {
+            const id = document.getElementById('idInput').value;
+            const resDiv = document.getElementById('res');
+            if(!id) return;
+
+            resDiv.style.display = "block";
+            resDiv.innerText = "Vérification...";
+
+            try {
+                const response = await fetch('valider.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id_national: id, bureau_id: "BUREAU_MOBILE_01" })
+                });
+                const data = await response.json();
+                resDiv.style.background = data.success ? "#d4edda" : "#f8d7da";
+                resDiv.innerText = data.message;
+                if(data.success) document.getElementById('idInput').value = "";
+            } catch (e) {
+                resDiv.innerText = "Erreur de connexion";
+            }
+        }
+    </script>
+</body>
+</html>
